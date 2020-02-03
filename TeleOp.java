@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="TeleOpOwais", group="Pushbot")
-public class Teleop1 extends LinearOpMode {
+public class TeleOp extends LinearOpMode {
 
     /* Declare OpMode members. */
     HardwarePushbot robot = new HardwarePushbot(); // Use a Pushbot's hardware
