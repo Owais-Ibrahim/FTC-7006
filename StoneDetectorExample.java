@@ -1,9 +1,7 @@
 
-        package org.firstinspires.ftc.teamcode;
+        package org.firstinspires.ftc.teamcode.TESTING;
 
 
-        import com.disnodeteam.dogecv.detectors.DogeCVDetector;
-        import com.disnodeteam.dogecv.detectors.skystone.SkystoneDetector;
         import com.qualcomm.robotcore.eventloop.opmode.Disabled;
         import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
         import com.qualcomm.robotcore.eventloop.opmode.TeleOp;

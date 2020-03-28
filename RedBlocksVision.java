@@ -107,74 +107,76 @@ public class RedBlocksVision extends LinearOpMode {
     }
 
     //1st Block Code (Based on vision)
+    //1st Block Code (Based on vision)
     public void GetBlock1() throws InterruptedException
     {
-        EncodedStraightDrive(24,0.6);
+        EncodedForwardDrive(24,0.5);
         sleep(100);
-        EncodedStrafe(-11,0.6);//Negative for right and positive for left
+        EncodedStrafeRight(8,0.5);//Negative for right and positive for left
+        sleep(100);
         GrabBlock(32,0.5);
         robot.Push.setPower(1.0);
-        sleep(600);
-        EncodedStraightDrive(-32,0.5);
+        sleep(1000);
+        EncodedBackwardDrive(35,0.4);
         robot.Push.setPower(1.0);
-        sleep(100);
+        sleep(300);
         robot.Grabber.setPosition(1.0);
         robot.Push.setPower(0);
         sleep(50);
-        TurnAbsolute(286,0.3,2);
+        TurnAbsolute(280,0.3,2);
         sleep(100);
-        EncodedStraightDrive(-75,0.5);
+        EncodedBackwardDrive(68,0.5);
         sleep(100);
-        TurnAbsolute(195,0.3,2);
-        EncodedStraightDrive(-22,0.3);
+        TurnAbsolute(190,0.3,2);
+        EncodedBackwardDrive(18,0.2);
         Foundation(); //Moves Foundation and drops block
         Park();
     }
 
     public void GetBlock2()throws InterruptedException
     {
-        EncodedStraightDrive(24,0.6);
+        EncodedForwardDrive(24,0.5);
         sleep(100);
-        GrabBlock(32,0.5);
+        GrabBlock(30,0.4);
         robot.Push.setPower(1.0);
-        sleep(600);
-        EncodedStraightDrive(-32,0.5);
+        sleep(1000);
+        EncodedBackwardDrive(29,0.4);
         robot.Push.setPower(1.0);
-        sleep(100);
+        sleep(300);
         robot.Grabber.setPosition(1.0);
         robot.Push.setPower(0);
         sleep(50);
-        TurnAbsolute(286,0.3,2);
+        TurnAbsolute(280,0.2,2);
         sleep(100);
-        EncodedStraightDrive(-85,0.5);
+        EncodedBackwardDrive(72,0.5);
         sleep(100);
-        TurnAbsolute(195,0.3,2);
-        EncodedStraightDrive(-22,0.3);
+        TurnAbsolute(190,0.2,2);
+        EncodedBackwardDrive(20,0.2);
         Foundation(); //Moves Foundation and drops block
         Park();
     }
 
     public void GetBlock3()throws InterruptedException
     {
-        EncodedStraightDrive(24,0.6);
+        EncodedForwardDrive(23,0.5);
         sleep(100);
-        EncodedStrafe(8,0.6);
+        EncodedStrafeLeft(10,0.3);
         sleep(100);
-        GrabBlock(32,0.5);
+        GrabBlock(30,0.4);
         robot.Push.setPower(1.0);
-        sleep(600);
-        EncodedStraightDrive(-32,0.5);
+        sleep(1000);
+        EncodedBackwardDrive(29,0.4);
         robot.Push.setPower(1.0);
-        sleep(100);
+        sleep(300);
         robot.Grabber.setPosition(1.0);
         robot.Push.setPower(0);
         sleep(50);
-        TurnAbsolute(286,0.3,2);
+        TurnAbsolute(280,0.2,2);
         sleep(100);
-        EncodedStraightDrive(-92,0.5);
+        EncodedBackwardDrive(80,0.5);
         sleep(100);
-        TurnAbsolute(195,0.3,2);
-        EncodedStraightDrive(-22,0.3);
+        TurnAbsolute(190,0.2,2);
+        EncodedBackwardDrive(18,0.2);
         Foundation(); //Moves Foundation and drops block
         Park();
     }
@@ -182,10 +184,12 @@ public class RedBlocksVision extends LinearOpMode {
 
     public void Park() throws InterruptedException
     {
-        EncodedStraightDrive(5,1.0);
-        EncodedStrafe(8,0.5);
-        EncodedStrafe(-20,0.5);
-        EncodedStraightDrive(40,1.0);
+
+        EncodedForwardDrive(5,0.5);
+        sleep(100);
+        EncodedStrafeRight(10,0.5);
+        sleep(200);
+        EncodedForwardDrive(35,0.5);
 
     }
 
@@ -247,35 +251,25 @@ public class RedBlocksVision extends LinearOpMode {
         int RotationsNeeded= (int)(inches*(COUNTS_PER_INCH));
 
         robot.rightFront.setTargetPosition((-RotationsNeeded)+(robot.rightFront.getCurrentPosition()));
-        robot.rightBack.setTargetPosition((-RotationsNeeded)+(robot.rightBack.getCurrentPosition()));
         robot.leftFront.setTargetPosition((RotationsNeeded)+(robot.leftFront.getCurrentPosition()));
-        robot.leftBack.setTargetPosition((RotationsNeeded)+(robot.leftBack.getCurrentPosition()));
 
         telemetry.addData("RightFront:", RotationsNeeded);
-        telemetry.addData("RightBack:", RotationsNeeded);
         telemetry.addData("LeftFront:", RotationsNeeded);
-        telemetry.addData("LeftBack:", RotationsNeeded);
-
         telemetry.update();
 
-
-
         robot.rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //sleep(1000);
-        robot.rightFront.setPower(speed);
-        robot.rightBack.setPower(speed);
-        robot.leftFront.setPower(speed);
-        robot.leftBack.setPower(speed);
-        //sleep(100);
 
-        while (opModeIsActive() && (robot.rightFront.isBusy() && robot.leftFront.isBusy())
-                && (robot.rightBack.isBusy() && robot.leftBack.isBusy()))
+        robot.rightFront.setPower(speed);
+        robot.leftFront.setPower(speed);
+
+        while (opModeIsActive() && (robot.rightFront.isBusy()))
         {
-            robot.rightIntake.setPower(-1.0);
-            robot.leftIntake.setPower(1.0);
+            robot.rightBack.setPower(-speed);
+            robot.leftBack.setPower(speed);
+
+            robot.rightIntake.setPower(-0.5);
+            robot.leftIntake.setPower(0.5);
 
             // Display it for the driver.
             telemetry.addData("Running:", robot.rightFront.getCurrentPosition());
@@ -297,44 +291,35 @@ public class RedBlocksVision extends LinearOpMode {
         robot.leftIntake.setPower(0);
         // Turn off RUN_TO_POSITION
         robot.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
     }
 
-    public void EncodedStraightDrive(double inches, double speed) throws InterruptedException //Make negative distance if want to forward or backward depending on motors
+    public void EncodedBackwardDrive(double inches, double speed) throws InterruptedException //Make negative distance if want to forward or backward depending on motors
     {
         int RotationsNeeded= (int)(inches*(COUNTS_PER_INCH));
 
-        robot.rightFront.setTargetPosition((-RotationsNeeded)+(robot.rightFront.getCurrentPosition()));
-        robot.rightBack.setTargetPosition((-RotationsNeeded)+(robot.rightBack.getCurrentPosition()));
-        robot.leftFront.setTargetPosition((RotationsNeeded)+(robot.leftFront.getCurrentPosition()));
-        robot.leftBack.setTargetPosition((RotationsNeeded)+(robot.leftBack.getCurrentPosition()));
+        robot.rightFront.setTargetPosition((RotationsNeeded)+(robot.rightFront.getCurrentPosition()));
+        robot.leftFront.setTargetPosition((-RotationsNeeded)+(robot.leftFront.getCurrentPosition()));
 
         telemetry.addData("RightFront:", RotationsNeeded);
-        telemetry.addData("RightBack:", RotationsNeeded);
         telemetry.addData("LeftFront:", RotationsNeeded);
-        telemetry.addData("LeftBack:", RotationsNeeded);
 
         telemetry.update();
 
 
 
         robot.rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //sleep(1000);
-        robot.rightFront.setPower(speed);
-        robot.rightBack.setPower(speed);
-        robot.leftFront.setPower(speed);
-        robot.leftBack.setPower(speed);
-        //sleep(100);
 
-        while (opModeIsActive() && (robot.rightFront.isBusy() && robot.leftFront.isBusy())
-                && (robot.rightBack.isBusy() && robot.leftBack.isBusy()))
+        robot.rightFront.setPower(speed);
+        robot.leftFront.setPower(speed);
+
+        while (opModeIsActive()&& (robot.rightFront.isBusy()))
+
         {
+            robot.rightBack.setPower(speed);
+            robot.leftBack.setPower(-speed);
 
         }
 
@@ -349,38 +334,73 @@ public class RedBlocksVision extends LinearOpMode {
 
         // Turn off RUN_TO_POSITION
         robot.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+    }
+    public void EncodedForwardDrive(double inches, double speed) throws InterruptedException //Make negative distance if want to forward or backward depending on motors
+    {
+        int RotationsNeeded= (int)(inches*(COUNTS_PER_INCH));
+
+        robot.rightFront.setTargetPosition((-RotationsNeeded)+(robot.rightFront.getCurrentPosition()));
+        robot.leftFront.setTargetPosition((RotationsNeeded)+(robot.leftFront.getCurrentPosition()));
+
+        telemetry.addData("RightFront:", RotationsNeeded);
+        telemetry.addData("LeftFront:", RotationsNeeded);
+
+        telemetry.update();
+
+
+
+        robot.rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //sleep(1000);
+        robot.rightFront.setPower(speed);
+        robot.leftFront.setPower(speed);
+        //sleep(100);
+
+        while (opModeIsActive()&& (robot.rightFront.isBusy()))
+
+        {
+            robot.rightBack.setPower(-speed);
+            robot.leftBack.setPower(speed);
+
+        }
+
+        waitOneFullHardwareCycle();
+
+
+        // Stop all motion;
+        robot.rightFront.setPower(0);
+        robot.rightBack.setPower(0);
+        robot.leftFront.setPower(0);
+        robot.leftBack.setPower(0);
+
+        // Turn off RUN_TO_POSITION
+        robot.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
     }
 
     //Negative for right and positive for left
-    public void EncodedStrafe(double inches, double speed) throws InterruptedException //Make negative if want to go right but positive if want to go left
+    public void EncodedStrafeLeft(double inches, double speed) throws InterruptedException //Make negative if want to go right but positive if want to go left
     {
         int RotationsNeeded= (int)(inches*(COUNTS_PER_INCH));
 
 
         robot.rightFront.setTargetPosition((-RotationsNeeded)+(robot.rightFront.getCurrentPosition()));
-        robot.rightBack.setTargetPosition((RotationsNeeded)+(robot.rightBack.getCurrentPosition()));
         robot.leftFront.setTargetPosition((-RotationsNeeded)+(robot.leftFront.getCurrentPosition()));
-        robot.leftBack.setTargetPosition((RotationsNeeded)+(robot.leftBack.getCurrentPosition()));
 
         // Turn On RUN_TO_POSITION
         robot.rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         robot.rightFront.setPower(speed);
-        robot.rightBack.setPower(speed);
         robot.leftFront.setPower(speed);
-        robot.leftBack.setPower(speed);
 
-        while (opModeIsActive() && (robot.rightFront.isBusy() && robot.leftFront.isBusy())
-                && (robot.rightBack.isBusy() && robot.leftBack.isBusy()))
+        while (opModeIsActive() && (robot.rightFront.isBusy()))
         {
-
+            robot.rightBack.setPower(speed);
+            robot.leftBack.setPower(speed);
 
 
             // Display it for the driver.
@@ -400,9 +420,47 @@ public class RedBlocksVision extends LinearOpMode {
 
         // Turn off RUN_TO_POSITION
         robot.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    public void EncodedStrafeRight(double inches, double speed) throws InterruptedException //Make negative if want to go right but positive if want to go left
+    {
+        int RotationsNeeded= (int)(inches*(COUNTS_PER_INCH));
+
+
+        robot.rightFront.setTargetPosition((RotationsNeeded)+(robot.rightFront.getCurrentPosition()));
+        robot.leftFront.setTargetPosition((RotationsNeeded)+(robot.leftFront.getCurrentPosition()));
+
+        // Turn On RUN_TO_POSITION
+        robot.rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        robot.rightFront.setPower(speed);
+        robot.leftFront.setPower(speed);
+
+        while (opModeIsActive() && (robot.rightFront.isBusy()))
+        {
+            robot.rightBack.setPower(-speed);
+            robot.leftBack.setPower(-speed);
+
+
+            // Display it for the driver.
+            telemetry.addData("Right:", robot.rightFront.getCurrentPosition());
+            telemetry.update();
+
+        }
+
+        waitOneFullHardwareCycle();
+
+
+        // Stop all motion;
+        robot.rightFront.setPower(0);
+        robot.rightBack.setPower(0);
+        robot.leftFront.setPower(0);
+        robot.leftBack.setPower(0);
+
+        // Turn off RUN_TO_POSITION
+        robot.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void EncoderReset()throws InterruptedException
@@ -411,24 +469,18 @@ public class RedBlocksVision extends LinearOpMode {
         telemetry.update();
 
 
-        //robot.right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         robot.Lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         robot.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         robot.Lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Send telemetry message to indicate successful Encoder reset
         telemetry.addData("Right:", "at %2d", robot.rightFront.getCurrentPosition());
-        telemetry.update();
         telemetry.addData("Left:", "at %2d", robot.leftFront.getCurrentPosition());
         telemetry.update();
 
@@ -562,8 +614,6 @@ public class RedBlocksVision extends LinearOpMode {
             Heading=robot.gyro.getHeading();
         }
 
-
-
         waitOneFullHardwareCycle();
 
         robot.rightFront.setPower(0);
@@ -574,43 +624,31 @@ public class RedBlocksVision extends LinearOpMode {
         telemetry.addData("CurrentHeading:", robot.gyro.getHeading());
         telemetry.update();
     }
-    public void EncodedStraightDriveFoundation(double inches, double speed) throws InterruptedException //Make negative distance if want to forward or backward depending on motors
+    public void EncodedForwardDriveFoundation(double inches, double speed) throws InterruptedException //Make negative distance if want to forward or backward depending on motors
     {
         int RotationsNeeded= (int)(inches*(COUNTS_PER_INCH));
 
         robot.rightFront.setTargetPosition((-RotationsNeeded)+(robot.rightFront.getCurrentPosition()));
-        robot.rightBack.setTargetPosition((-RotationsNeeded)+(robot.rightBack.getCurrentPosition()));
         robot.leftFront.setTargetPosition((RotationsNeeded)+(robot.leftFront.getCurrentPosition()));
-        robot.leftBack.setTargetPosition((RotationsNeeded)+(robot.leftBack.getCurrentPosition()));
 
         telemetry.addData("RightFront:", RotationsNeeded);
-        telemetry.addData("RightBack:", RotationsNeeded);
         telemetry.addData("LeftFront:", RotationsNeeded);
-        telemetry.addData("LeftBack:", RotationsNeeded);
 
         telemetry.update();
 
 
 
         robot.rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         //sleep(1000);
         robot.rightFront.setPower(speed);
-        robot.rightBack.setPower(speed);
         robot.leftFront.setPower(speed);
-        robot.leftBack.setPower(speed);
         //sleep(100);
 
-        while (opModeIsActive() && (robot.rightFront.isBusy() && robot.leftFront.isBusy())
-                && (robot.rightBack.isBusy() && robot.leftBack.isBusy()))
+        while (opModeIsActive() && (robot.rightFront.isBusy()))
         {
-            robot.Lift.setPower(-0.8);
-            sleep(500);
-            robot.Lift.setPower(0);
-            sleep(100);
-
+            robot.rightBack.setPower(-speed);
+            robot.leftBack.setPower(speed);
         }
 
         waitOneFullHardwareCycle();
@@ -626,43 +664,37 @@ public class RedBlocksVision extends LinearOpMode {
 
         // Turn off RUN_TO_POSITION
         robot.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
     }
-    public void EncodedStraightDriveFoundation2(double inches, double speed) throws InterruptedException //Make negative distance if want to forward or backward depending on motors
+    public void EncodedBackDriveFoundation2(double inches, double speed) throws InterruptedException //Make negative distance if want to forward or backward depending on motors
     {
         int RotationsNeeded= (int)(inches*(COUNTS_PER_INCH));
 
-        robot.rightFront.setTargetPosition((-RotationsNeeded)+(robot.rightFront.getCurrentPosition()));
-        robot.rightBack.setTargetPosition((-RotationsNeeded)+(robot.rightBack.getCurrentPosition()));
-        robot.leftFront.setTargetPosition((RotationsNeeded)+(robot.leftFront.getCurrentPosition()));
-        robot.leftBack.setTargetPosition((RotationsNeeded)+(robot.leftBack.getCurrentPosition()));
+        robot.rightFront.setTargetPosition((RotationsNeeded)+(robot.rightFront.getCurrentPosition()));
+        robot.leftFront.setTargetPosition((-RotationsNeeded)+(robot.leftFront.getCurrentPosition()));
 
         telemetry.addData("RightFront:", RotationsNeeded);
-        telemetry.addData("RightBack:", RotationsNeeded);
         telemetry.addData("LeftFront:", RotationsNeeded);
-        telemetry.addData("LeftBack:", RotationsNeeded);
 
         telemetry.update();
 
-
-
         robot.rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //sleep(1000);
-        robot.rightFront.setPower(speed);
-        robot.rightBack.setPower(speed);
-        robot.leftFront.setPower(speed);
-        robot.leftBack.setPower(speed);
-        //sleep(100);
 
-        while (opModeIsActive() && (robot.rightFront.isBusy() && robot.leftFront.isBusy())
-                && (robot.rightBack.isBusy() && robot.leftBack.isBusy()))
+        robot.rightFront.setPower(speed);
+        robot.leftFront.setPower(speed);
+        sleep(100);
+
+        while (opModeIsActive() && (robot.rightFront.isBusy()))
         {
+            robot.rightBack.setPower(speed);
+            robot.leftBack.setPower(-speed);
+
+            robot.Lift.setPower(-0.8);
+            sleep(500);//Lift going up
+            robot.Lift.setPower(0);
+            sleep(100);
 
             robot.GrabMove.setPosition(1.0);
         }
@@ -682,9 +714,7 @@ public class RedBlocksVision extends LinearOpMode {
 
         // Turn off RUN_TO_POSITION
         robot.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
     }
 
@@ -693,29 +723,40 @@ public class RedBlocksVision extends LinearOpMode {
     public void Foundation() throws InterruptedException
     {
         robot.GrabFoundationRight.setPosition(0.5);
-        robot.GrabFoundationLeft.setPosition(1.0);
+        robot.GrabFoundationLeft.setPosition(0.5);
+        sleep(300);
+
+        EncodedForwardDrive(30,0.3);//Brings Lift Up as well
         sleep(100);
 
-        EncodedStraightDriveFoundation(30,0.4);//Brings Lift Up as well
-        sleep(100);
-        EncodedStrafe(-18,0.3);
+        EncodedStrafeRight(18,0.3);
 
         robot.GrabFoundationRight.setPosition(0.5);
-        robot.GrabFoundationLeft.setPosition(1.0);
-        sleep(10);
-
-        TurnAbsolutePositive(270,0.3,2);
-
-        robot.GrabFoundationRight.setPosition(0.25);
         robot.GrabFoundationLeft.setPosition(0.5);
-        sleep(1000);
+        sleep(200);
 
-        EncodedStraightDriveFoundation2(-15,0.5);//Brings block out and throws
+        TurnAbsolutePositive(280,0.3,2);
 
-        robot.GrabMove.setPosition(0);
+        robot.GrabFoundationRight.setPosition(0);
+        robot.GrabFoundationLeft.setPosition(1);
+        sleep(100);
+
+        EncodedBackwardDrive(15,0.5);//Brings block out and throws
+        sleep(100);
+
+
+        LiftUp(10,1.0);//Going Up
+        //sleep(600);
+
+        robot.GrabMove.setPosition(1.0);
         sleep(600);
 
-        LiftDown(7,1.0);
+        LiftDown(8,1.0);//Going Down
+        robot.Grabber.setPosition(0.5);
+        sleep(100);
+
+        //robot.GrabMove.setPosition(0);
+        //sleep(600);
 
     }
 

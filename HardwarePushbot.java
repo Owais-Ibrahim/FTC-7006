@@ -1,16 +1,25 @@
 package org.firstinspires.ftc.teamcode;
-import android.graphics.drawable.GradientDrawable;
 
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
-import com.qualcomm.hardware.motors.TetrixMotor;
-import com.qualcomm.robotcore.hardware.CRServo;
+import android.icu.util.Measure;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
+import com.qualcomm.hardware.rev.RevSPARKMini;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
-import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 
 
 public class HardwarePushbot
@@ -30,17 +39,25 @@ public class HardwarePushbot
     public Servo GrabMove=null;
     public Servo Grabber=null;
     public CRServo Push=null;
+    public DcMotor Measure=null;
     public DcMotor Lift=null;
 
 
     //Additional Servo
     public Servo GrabFoundationRight =null;
     public Servo GrabFoundationLeft =null;
+    public Servo Saftey=null;
+    public Servo Capstone=null;
+    public Servo AutoArm=null;
+    public Servo AutoClaw=null;
+
 
 
     //Sensor
     public ModernRoboticsI2cGyro gyro = null;
-    //public ModernRoboticsI2cRangeSensor rangeSensor=null;
+    public ModernRoboticsI2cRangeSensor SideSensor=null;
+
+
 
 
 
@@ -75,23 +92,25 @@ public class HardwarePushbot
         //Outake
         Lift=hwMap.get(DcMotor.class,"lift");
         Grabber=hwMap.get(Servo.class,"grabber");
-        GrabMove=hwMap.get(Servo.class,"grabservo");
+        GrabMove=hwMap.get(Servo.class,"grabmove");
         Push=hwMap.get(CRServo.class,"push");
+        Measure=hwMap.get(DcMotor.class,"m");
+        AutoArm=hwMap.get(Servo.class,"autoarm");
+        AutoClaw=hwMap.get(Servo.class,"autoclaw");
 
 
 
         //Aditional Servos
-        GrabFoundationRight=hwMap.get(Servo.class,"gr");
-        GrabFoundationLeft=hwMap.get(Servo.class,"gl");
+        GrabFoundationRight=hwMap.get(Servo.class,"foundr");
+        GrabFoundationLeft=hwMap.get(Servo.class,"foundl");
+        Saftey=hwMap.get(Servo.class,"safe");
+        Capstone=hwMap.get(Servo.class,"c");
 
 
 
         //Sensor
         gyro=hwMap.get(ModernRoboticsI2cGyro.class,"g");
-        //rangeSensor=hwMap.get(ModernRoboticsI2cRangeSensor.class,"r");
-
-
-
+        SideSensor=hwMap.get(ModernRoboticsI2cRangeSensor.class,"r");
 
 
 
@@ -111,7 +130,7 @@ public class HardwarePushbot
         //Outake
         Lift.setPower(0);
         Push.setPower(0);
-
+        Measure.setPower(0);
 
 
         //Run Wihtout Encoders
@@ -125,6 +144,7 @@ public class HardwarePushbot
         //Intake
         rightIntake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftIntake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Measure.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
         //Outake
@@ -144,13 +164,16 @@ public class HardwarePushbot
 
         //Outake
         Lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        Measure.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //Servo Position
         GrabMove.setPosition(0);
         Grabber.setPosition(0.5);
         GrabFoundationLeft.setPosition(0);
-        GrabFoundationRight.setPosition(0);
-
-
+        GrabFoundationRight.setPosition(1);
+        Saftey.setPosition(0.6);
+        Capstone.setPosition(0);
+        AutoArm.setPosition(0.55);
+        AutoClaw.setPosition(1);
     }
 }

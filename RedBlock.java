@@ -1,14 +1,29 @@
 package org.firstinspires.ftc.teamcode;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
-@Autonomous(name= "Red Block", group="Sky autonomous")
+@Autonomous(name= "Red Block2", group="Sky autonomous")
+//@Disabled
 public class RedBlock extends LinearOpMode {
 
     HardwarePushbot robot = new HardwarePushbot();
+
+    private DistanceSensor FrontSensor;
+    private DistanceSensor BackSensor=null;
 
 
     //Encoder
@@ -20,106 +35,401 @@ public class RedBlock extends LinearOpMode {
     static final double     PulleyDiameter   = 1.25;
     static final double     LiftInch         = (TourqueMotorTicks) / (PulleyDiameter * 3.1415);
 
+    static final double     HEADING_THRESHOLD       = 1 ;      // As tight as we can make it with an integer gyro
+    static final double     P_TURN_COEFF            = 0.5;     // Larger is more responsive, but also less stable
+    static final double     P_DRIVE_COEFF           = 0.15;
+
+
+
     @Override
     public void runOpMode() throws InterruptedException {
 
         robot.init(hardwareMap);
+        FrontSensor = hardwareMap.get(DistanceSensor.class, "frontrange");
+        BackSensor=hardwareMap.get(Rev2mDistanceSensor.class,"backrange");
+
+        double Frontrange=FrontSensor.getDistance(DistanceUnit.CM);
+        double BackRange=BackSensor.getDistance(DistanceUnit.CM);
+        double SideRange= robot.SideSensor.cmUltrasonic();
+
+
         GyroCalibirate();
-        EncoderReset();
 
         waitForStart();
 
+        FrontSensor(38,0.4);
+        //sleep(100);
+        gyroTurn(0.3,-86);
+        sleep(100);
 
-        //GetBlock3();
+        double range=BackSensor.getDistance(DistanceUnit.CM);
+        double speed=0.4;
+        telemetry.addData("range:", range);
+        telemetry.update();
+        while(range<65)
+        {
+            robot.rightFront.setPower(-speed);
+            robot.rightBack.setPower(-speed);
+            robot.leftFront.setPower(speed);
+            robot.leftBack.setPower(speed);
+
+            telemetry.addData("range:", range);
+            telemetry.update();
+            range=BackSensor.getDistance(DistanceUnit.CM);
+
+        }
+
+        robot.rightFront.setPower(0);
+        robot.rightBack.setPower(0);
+        robot.leftFront.setPower(0);
+        robot.leftBack.setPower(0);
+        sleep(200);
+
+
+
+        SideRange=robot.SideSensor.cmUltrasonic();
+        speed=0.3;
+        telemetry.addData("range:", SideRange);
+        telemetry.update();
+        while(SideRange>8)
+        {
+            robot.rightFront.setPower(-speed);
+            robot.rightBack.setPower(speed);
+            robot.leftFront.setPower(-speed);
+            robot.leftBack.setPower(speed);
+
+            telemetry.addData("range:", range);
+            telemetry.update();
+            SideRange=robot.SideSensor.cmUltrasonic();
+
+        }
+
+        robot.rightFront.setPower(0);
+        robot.rightBack.setPower(0);
+        robot.leftFront.setPower(0);
+        robot.leftBack.setPower(0);
+        sleep(200);
+
+        gyroTurn(0.3,-86);
+
+
+
+        robot.AutoArm.setPosition(0);
+        sleep(600);
+        robot.AutoClaw.setPosition(0);
+        sleep(1000);
+        robot.AutoArm.setPosition(0.8);
+        sleep(200);
+
+
+        StrafePower(-0.4,600);
+        gyroTurn(0.3,-86);
+
+
+
+        speed=0.4;
+        robot.rightFront.setPower(-speed);
+        robot.rightBack.setPower(-speed);
+        robot.leftFront.setPower(speed);
+        robot.leftBack.setPower(speed);
+        sleep(800);
+
+        robot.rightFront.setPower(0);
+        robot.rightBack.setPower(0);
+        robot.leftFront.setPower(0);
+        robot.leftBack.setPower(0);
+        sleep(200);
+
+        gyroTurn(0.3,-86);
+
+        speed=0.4;
+        robot.rightFront.setPower(-speed);
+        robot.rightBack.setPower(-speed);
+        robot.leftFront.setPower(speed);
+        robot.leftBack.setPower(speed);
+        sleep(800);
+
+        robot.rightFront.setPower(0);
+        robot.rightBack.setPower(0);
+        robot.leftFront.setPower(0);
+        robot.leftBack.setPower(0);
+        sleep(200);
+
+
+        FrontSensor(80,0.4);
+
+        gyroTurn(0.3,-86);
+
+
+        StrafePower(0.4,700);
+
+        gyroTurn(0.3,-86);
+
+        //StrafePower(0.4,700);
+
+
+        robot.AutoArm.setPosition(0);
+        sleep(500);
+        robot.AutoClaw.setPosition(1);
+        sleep(600);
+        robot.AutoArm.setPosition(0.55);
+        sleep(200);
+        StrafePower(-0.5,400);
+
+        gyroTurn(0.3,-180);
+
+        robot.GrabFoundationLeft.setPosition(0);
+        robot.GrabFoundationRight.setPosition(1);
+
+        //range=FrontSensor.getDistance(DistanceUnit.CM);
+        speed=0.2;
+        robot.rightFront.setPower(speed);
+        robot.rightBack.setPower(speed);
+        robot.leftFront.setPower(-speed);
+        robot.leftBack.setPower(-speed);
+        sleep(1000);
+
+        robot.rightFront.setPower(0);
+        robot.rightBack.setPower(0);
+        robot.leftFront.setPower(0);
+        robot.leftBack.setPower(0);
+        sleep(200);
+
+        robot.GrabFoundationLeft.setPosition(1);
+        robot.GrabFoundationRight.setPosition(0);
+        sleep(1000);
+
+        speed=0.2;
+        robot.rightFront.setPower(-speed);
+        robot.rightBack.setPower(-speed);
+        robot.leftFront.setPower(speed);
+        robot.leftBack.setPower(speed);
+        sleep(3000);
+
+        robot.rightFront.setPower(0);
+        robot.rightBack.setPower(0);
+        robot.leftFront.setPower(0);
+        robot.leftBack.setPower(0);
+        sleep(200);
+
+        gyroTurn(0.6,-225);
+
+        SideRange=robot.SideSensor.cmUltrasonic();
+        speed=0.3;
+        telemetry.addData("range:", SideRange);
+        telemetry.update();
+        while(SideRange>8)
+        {
+            robot.rightFront.setPower(-speed);
+            robot.rightBack.setPower(speed);
+            robot.leftFront.setPower(-speed);
+            robot.leftBack.setPower(speed);
+
+            telemetry.addData("range:", range);
+            telemetry.update();
+            SideRange=robot.SideSensor.cmUltrasonic();
+
+        }
+
+        robot.rightFront.setPower(0);
+        robot.rightBack.setPower(0);
+        robot.leftFront.setPower(0);
+        robot.leftBack.setPower(0);
+        sleep(200);
+        gyroTurn(0.6,-270);
+
+        speed=0.8;
+
+        robot.rightFront.setPower(speed);
+        robot.rightBack.setPower(speed);
+        robot.leftFront.setPower(-speed);
+        robot.leftBack.setPower(-speed);
+
+        sleep(2000);
+
+        robot.rightFront.setPower(0);
+        robot.rightBack.setPower(0);
+        robot.leftFront.setPower(0);
+        robot.leftBack.setPower(0);
+        sleep(200);
+
+
+
     }
-
 
     //1st Block Code (Based on vision)
     public void GetBlock1() throws InterruptedException
     {
-        EncodedStraightDrive(24,0.6);
-        sleep(100);
-        EncodedStrafe(-11,0.6);//Negative for right and positive for left
-        GrabBlock(32,0.5);
-        robot.Push.setPower(1.0);
-        sleep(600);
-        EncodedStraightDrive(-32,0.5);
-        robot.Push.setPower(1.0);
-        sleep(100);
-        robot.Grabber.setPosition(1.0);
-        robot.Push.setPower(0);
-        sleep(50);
-        TurnAbsolute(286,0.3,2);
-        sleep(100);
-        EncodedStraightDrive(-75,0.5);
-        sleep(100);
-        TurnAbsolute(195,0.3,2);
-        EncodedStraightDrive(-22,0.3);
-        Foundation(); //Moves Foundation and drops block
-        Park();
+
+
     }
 
     public void GetBlock2()throws InterruptedException
     {
-        EncodedStraightDrive(24,0.6);
-        sleep(100);
-        GrabBlock(32,0.5);
-        robot.Push.setPower(1.0);
-        sleep(600);
-        EncodedStraightDrive(-32,0.5);
-        robot.Push.setPower(1.0);
-        sleep(100);
-        robot.Grabber.setPosition(1.0);
-        robot.Push.setPower(0);
-        sleep(50);
-        TurnAbsolute(286,0.3,2);
-        sleep(100);
-        EncodedStraightDrive(-85,0.5);
-        sleep(100);
-        TurnAbsolute(195,0.3,2);
-        EncodedStraightDrive(-22,0.3);
-        Foundation(); //Moves Foundation and drops block
-        Park();
+
     }
 
     public void GetBlock3()throws InterruptedException
     {
-        EncodedStraightDrive(24,0.6);
-        sleep(100);
-        EncodedStrafe(8,0.6);
-        sleep(100);
-        GrabBlock(32,0.5);
-        robot.Push.setPower(1.0);
+        /*
+     double  speed=0.4;
+        robot.rightFront.setPower(-speed);
+        robot.rightBack.setPower(-speed);
+        robot.leftFront.setPower(speed);
+        robot.leftBack.setPower(speed);
+        sleep(900);
+
+        robot.rightFront.setPower(0);
+        robot.rightBack.setPower(0);
+        robot.leftFront.setPower(0);
+        robot.leftBack.setPower(0);
+        sleep(200);
+
+        FrontSensor(70,0.4);
+
+        SideRange=robot.SideSensor.cmUltrasonic();
+        speed=0.3;
+        telemetry.addData("range:", SideRange);
+        telemetry.update();
+        while(SideRange>8)
+        {
+            robot.rightFront.setPower(-speed);
+            robot.rightBack.setPower(speed);
+            robot.leftFront.setPower(-speed);
+            robot.leftBack.setPower(speed);
+
+            telemetry.addData("range:", range);
+            telemetry.update();
+            SideRange=robot.SideSensor.cmUltrasonic();
+
+        }
+
+        robot.rightFront.setPower(0);
+        robot.rightBack.setPower(0);
+        robot.leftFront.setPower(0);
+        robot.leftBack.setPower(0);
+        sleep(200);
+
+        gyroTurn(0.3,-86);
+
+        robot.AutoArm.setPosition(0);
+        sleep(500);
+        robot.AutoClaw.setPosition(0);
         sleep(600);
-        EncodedStraightDrive(-32,0.5);
-        robot.Push.setPower(1.0);
+        robot.AutoArm.setPosition(0.8);
+        sleep(200);
+
+        StrafePower(-0.4,600);
+
         sleep(100);
-        robot.Grabber.setPosition(1.0);
-        robot.Push.setPower(0);
-        sleep(50);
-        TurnAbsolute(286,0.3,2);
-        sleep(100);
-        EncodedStraightDrive(-92,0.5);
-        sleep(100);
-        TurnAbsolute(195,0.3,2);
-        EncodedStraightDrive(-22,0.3);
-        Foundation(); //Moves Foundation and drops block
-        Park();
+
+        gyroTurn(0.3,-86);
+
+        speed=0.4;
+        robot.rightFront.setPower(speed);
+        robot.rightBack.setPower(speed);
+        robot.leftFront.setPower(-speed);
+        robot.leftBack.setPower(-speed);
+        sleep(1000);
+
+        robot.rightFront.setPower(0);
+        robot.rightBack.setPower(0);
+        robot.leftFront.setPower(0);
+        robot.leftBack.setPower(0);
+        sleep(200);
+
+        gyroTurn(0.3,-86);
+
+        robot.rightFront.setPower(speed);
+        robot.rightBack.setPower(speed);
+        robot.leftFront.setPower(-speed);
+        robot.leftBack.setPower(-speed);
+        sleep(1000);
+
+        robot.rightFront.setPower(0);
+        robot.rightBack.setPower(0);
+        robot.leftFront.setPower(0);
+        robot.leftBack.setPower(0);
+        sleep(200);
+
+        BackRange=BackSensor.getDistance(DistanceUnit.CM);
+        speed=0.4;
+        telemetry.addData("range:", range);
+        telemetry.update();
+        while(BackRange>30)
+        {
+            robot.rightFront.setPower(speed);
+            robot.rightBack.setPower(speed);
+            robot.leftFront.setPower(-speed);
+            robot.leftBack.setPower(-speed);
+
+            telemetry.addData("range:", range);
+            telemetry.update();
+            BackRange=BackSensor.getDistance(DistanceUnit.CM);
+
+        }
+
+        robot.rightFront.setPower(0);
+        robot.rightBack.setPower(0);
+        robot.leftFront.setPower(0);
+        robot.leftBack.setPower(0);
+        sleep(200);
+
+        StrafePower(0.4,600);
+
+        robot.AutoArm.setPosition(0);
+        sleep(500);
+        robot.AutoClaw.setPosition(1);
+        sleep(600);
+        robot.AutoArm.setPosition(0.55);
+        sleep(200);
+        */
+
     }
-
-
-    public void Park() throws InterruptedException
+    public void StrafePower(double speed, int sleep)throws InterruptedException
     {
-        //EncodedStrafe(-10,0.5);
-        EncodedStraightDrive(5,1.0);
-        EncodedStrafe(8,0.5);
-        EncodedStrafe(-20,0.5);
-        EncodedStraightDrive(40,1.0);
+        robot.rightFront.setPower(-speed);
+        robot.rightBack.setPower(speed);
+        robot.leftFront.setPower(-speed);
+        robot.leftBack.setPower(speed);
+        sleep(sleep);
+
+        robot.rightFront.setPower(0);
+        robot.rightBack.setPower(0);
+        robot.leftFront.setPower(0);
+        robot.leftBack.setPower(0);
+        sleep(200);
+
+
 
     }
+
+
+    public void FrontSensor(double inches, double speed)
+    {
+        double range=FrontSensor.getDistance(DistanceUnit.CM);
+        while(range>inches)
+        {
+            robot.rightFront.setPower(-speed);
+            robot.rightBack.setPower(-speed);
+            robot.leftFront.setPower(speed);
+            robot.leftBack.setPower(speed);
+
+            telemetry.addData("range:", range);
+            telemetry.update();
+            range=FrontSensor.getDistance(DistanceUnit.CM);
+
+        }
+        robot.rightFront.setPower(0);
+        robot.rightBack.setPower(0);
+        robot.leftFront.setPower(0);
+        robot.leftBack.setPower(0);
+        sleep(200);
+    }
+
+
 
     //Encoder
-
     public void LiftUp (double inches, double speed) throws InterruptedException
     {
         int RotationsNeeded= (int)(inches*(LiftInch));
@@ -170,201 +480,6 @@ public class RedBlock extends LinearOpMode {
         // Turn off RUN_TO_POSITION
         robot.Lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-
-    public void GrabBlock(double inches, double speed) throws InterruptedException //Make negative distance if want to forward or backward depending on motors
-    {
-        int RotationsNeeded= (int)(inches*(COUNTS_PER_INCH));
-
-        robot.rightFront.setTargetPosition((-RotationsNeeded)+(robot.rightFront.getCurrentPosition()));
-        robot.rightBack.setTargetPosition((-RotationsNeeded)+(robot.rightBack.getCurrentPosition()));
-        robot.leftFront.setTargetPosition((RotationsNeeded)+(robot.leftFront.getCurrentPosition()));
-        robot.leftBack.setTargetPosition((RotationsNeeded)+(robot.leftBack.getCurrentPosition()));
-
-        telemetry.addData("RightFront:", RotationsNeeded);
-        telemetry.addData("RightBack:", RotationsNeeded);
-        telemetry.addData("LeftFront:", RotationsNeeded);
-        telemetry.addData("LeftBack:", RotationsNeeded);
-
-        telemetry.update();
-
-
-
-        robot.rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //sleep(1000);
-        robot.rightFront.setPower(speed);
-        robot.rightBack.setPower(speed);
-        robot.leftFront.setPower(speed);
-        robot.leftBack.setPower(speed);
-        //sleep(100);
-
-        while (opModeIsActive() && (robot.rightFront.isBusy() && robot.leftFront.isBusy())
-                && (robot.rightBack.isBusy() && robot.leftBack.isBusy()))
-        {
-            robot.rightIntake.setPower(-1.0);
-            robot.leftIntake.setPower(1.0);
-
-            // Display it for the driver.
-            telemetry.addData("Running:", robot.rightFront.getCurrentPosition());
-            telemetry.addData("Left:", robot.leftFront.getCurrentPosition());
-            telemetry.update();
-
-        }
-
-        waitOneFullHardwareCycle();
-
-
-        // Stop all motion;
-        robot.rightFront.setPower(0);
-        robot.rightBack.setPower(0);
-        robot.leftFront.setPower(0);
-        robot.leftBack.setPower(0);
-
-        robot.rightIntake.setPower(0);
-        robot.leftIntake.setPower(0);
-        // Turn off RUN_TO_POSITION
-        robot.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-    }
-
-    public void EncodedStraightDrive(double inches, double speed) throws InterruptedException //Make negative distance if want to forward or backward depending on motors
-    {
-        int RotationsNeeded= (int)(inches*(COUNTS_PER_INCH));
-
-        robot.rightFront.setTargetPosition((-RotationsNeeded)+(robot.rightFront.getCurrentPosition()));
-        robot.rightBack.setTargetPosition((-RotationsNeeded)+(robot.rightBack.getCurrentPosition()));
-        robot.leftFront.setTargetPosition((RotationsNeeded)+(robot.leftFront.getCurrentPosition()));
-        robot.leftBack.setTargetPosition((RotationsNeeded)+(robot.leftBack.getCurrentPosition()));
-
-        telemetry.addData("RightFront:", RotationsNeeded);
-        telemetry.addData("RightBack:", RotationsNeeded);
-        telemetry.addData("LeftFront:", RotationsNeeded);
-        telemetry.addData("LeftBack:", RotationsNeeded);
-
-        telemetry.update();
-
-
-
-        robot.rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //sleep(1000);
-        robot.rightFront.setPower(speed);
-        robot.rightBack.setPower(speed);
-        robot.leftFront.setPower(speed);
-        robot.leftBack.setPower(speed);
-        //sleep(100);
-
-        while (opModeIsActive() && (robot.rightFront.isBusy() && robot.leftFront.isBusy())
-                && (robot.rightBack.isBusy() && robot.leftBack.isBusy()))
-        {
-
-        }
-
-        waitOneFullHardwareCycle();
-
-
-        // Stop all motion;
-        robot.rightFront.setPower(0);
-        robot.rightBack.setPower(0);
-        robot.leftFront.setPower(0);
-        robot.leftBack.setPower(0);
-
-        // Turn off RUN_TO_POSITION
-        robot.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-    }
-
-    //Negative for right and positive for left
-    public void EncodedStrafe(double inches, double speed) throws InterruptedException //Make negative if want to go right but positive if want to go left
-    {
-        int RotationsNeeded= (int)(inches*(COUNTS_PER_INCH));
-
-
-        robot.rightFront.setTargetPosition((-RotationsNeeded)+(robot.rightFront.getCurrentPosition()));
-        robot.rightBack.setTargetPosition((RotationsNeeded)+(robot.rightBack.getCurrentPosition()));
-        robot.leftFront.setTargetPosition((-RotationsNeeded)+(robot.leftFront.getCurrentPosition()));
-        robot.leftBack.setTargetPosition((RotationsNeeded)+(robot.leftBack.getCurrentPosition()));
-
-        // Turn On RUN_TO_POSITION
-        robot.rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        robot.rightFront.setPower(speed);
-        robot.rightBack.setPower(speed);
-        robot.leftFront.setPower(speed);
-        robot.leftBack.setPower(speed);
-
-        while (opModeIsActive() && (robot.rightFront.isBusy() && robot.leftFront.isBusy())
-                && (robot.rightBack.isBusy() && robot.leftBack.isBusy()))
-        {
-
-
-
-            // Display it for the driver.
-            telemetry.addData("Right:", robot.rightFront.getCurrentPosition());
-            telemetry.update();
-
-        }
-
-        waitOneFullHardwareCycle();
-
-
-        // Stop all motion;
-        robot.rightFront.setPower(0);
-        robot.rightBack.setPower(0);
-        robot.leftFront.setPower(0);
-        robot.leftBack.setPower(0);
-
-        // Turn off RUN_TO_POSITION
-        robot.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
-    public void EncoderReset()throws InterruptedException
-    {
-        telemetry.addLine("Status Resetting Encoders");
-        telemetry.update();
-
-
-        //robot.right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        robot.Lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        robot.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        robot.Lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        // Send telemetry message to indicate successful Encoder reset
-        telemetry.addData("Right:", "at %2d", robot.rightFront.getCurrentPosition());
-        telemetry.update();
-        telemetry.addData("Left:", "at %2d", robot.leftFront.getCurrentPosition());
-        telemetry.update();
-
-
-    }
-
-
     //Gyro
     public void GyroCalibirate() throws InterruptedException
     {
@@ -379,275 +494,84 @@ public class RedBlock extends LinearOpMode {
         telemetry.addLine("Robot Done Calibrating");
         telemetry.update();
     }
+    public void gyroTurn (  double speed, double angle) {
 
-    public void TurnAbsolute(int target,double turnspeed, int threshold) throws InterruptedException
-    {
-        int Heading= robot.gyro.getHeading();
-        if (Heading>180)
-        {
-            Heading= robot.gyro.getHeading()-360;
-        }
-
-        while (Math.abs(Heading-target) > threshold)
-        {
-            if (Heading>180)
-            {
-                Heading= robot.gyro.getHeading()-360;
-            }
-
-            telemetry.addData("CurrentHeading:", Heading);
+        // keep looping while we are still active, and not on heading.
+        while (opModeIsActive() && !onHeading(speed, angle, P_TURN_COEFF)) {
+            // Update telemetry & Allow time for other processes to run.
             telemetry.update();
-
-            if (Heading>target)
-            {
-                //CW
-                robot.rightFront.setPower(turnspeed);
-                robot.rightBack.setPower(turnspeed);
-                robot.leftFront.setPower(turnspeed);
-                robot.leftBack.setPower(turnspeed);
-
-                telemetry.addData("Heading>Target",Heading );
-                telemetry.update();
-
-            }
-            if (Heading<target)
-            {
-                //CCW
-                robot.rightFront.setPower(-turnspeed);
-                robot.rightBack.setPower(-turnspeed);
-                robot.leftFront.setPower(-turnspeed);
-                robot.leftBack.setPower(-turnspeed);
-
-                telemetry.addData("Heading<Target", Heading );
-                telemetry.update();
-            }
-
-
-            Heading=robot.gyro.getHeading();
         }
-
-
-
-        waitOneFullHardwareCycle();
-
-        robot.rightFront.setPower(0);
-        robot.rightBack.setPower(0);
-        robot.leftFront.setPower(0);
-        robot.leftBack.setPower(0);
-
-        telemetry.addData("CurrentHeading:", robot.gyro.getHeading());
-        telemetry.update();
     }
-    public void TurnAbsolutePositive(int target,double turnspeed, int threshold) throws InterruptedException
-    {
-        int Heading= robot.gyro.getHeading();
-        if (Heading>180)
-        {
-            Heading= robot.gyro.getHeading()-360;
-        }
 
-        while (Math.abs(Heading-target) > threshold)
-        {
-            if (Heading>180)
-            {
-                Heading= robot.gyro.getHeading()-360;
-            }
 
-            telemetry.addData("CurrentHeading:", Heading);
+    public void gyroHold( double speed, double angle, double holdTime) {
+
+        ElapsedTime holdTimer = new ElapsedTime();
+
+        // keep looping while we have time remaining.
+        holdTimer.reset();
+        while (opModeIsActive() && (holdTimer.time() < holdTime)) {
+            // Update telemetry & Allow time for other processes to run.
+            onHeading(speed, angle, P_TURN_COEFF);
             telemetry.update();
-
-            if (Heading>target)
-            {
-                //CW
-                robot.rightFront.setPower(turnspeed);
-                robot.rightBack.setPower(turnspeed);
-                robot.leftFront.setPower(turnspeed);
-                robot.leftBack.setPower(turnspeed);
-
-
-
-
-
-
-                telemetry.addData("Heading>Target",Heading );
-                telemetry.update();
-
-            }
-            if (Heading<target)
-            {
-                //CCW
-                robot.rightFront.setPower(turnspeed);
-                robot.rightBack.setPower(turnspeed);
-                robot.leftFront.setPower(turnspeed);
-                robot.leftBack.setPower(turnspeed);
-
-
-
-                telemetry.addData("Heading<Target", Heading );
-                telemetry.update();
-            }
-
-
-            Heading=robot.gyro.getHeading();
         }
-
-
-
-        waitOneFullHardwareCycle();
-
-        robot.rightFront.setPower(0);
-        robot.rightBack.setPower(0);
-        robot.leftFront.setPower(0);
-        robot.leftBack.setPower(0);
-
-        telemetry.addData("CurrentHeading:", robot.gyro.getHeading());
-        telemetry.update();
-    }
-    public void EncodedStraightDriveFoundation(double inches, double speed) throws InterruptedException //Make negative distance if want to forward or backward depending on motors
-    {
-        int RotationsNeeded= (int)(inches*(COUNTS_PER_INCH));
-
-        robot.rightFront.setTargetPosition((-RotationsNeeded)+(robot.rightFront.getCurrentPosition()));
-        robot.rightBack.setTargetPosition((-RotationsNeeded)+(robot.rightBack.getCurrentPosition()));
-        robot.leftFront.setTargetPosition((RotationsNeeded)+(robot.leftFront.getCurrentPosition()));
-        robot.leftBack.setTargetPosition((RotationsNeeded)+(robot.leftBack.getCurrentPosition()));
-
-        telemetry.addData("RightFront:", RotationsNeeded);
-        telemetry.addData("RightBack:", RotationsNeeded);
-        telemetry.addData("LeftFront:", RotationsNeeded);
-        telemetry.addData("LeftBack:", RotationsNeeded);
-
-        telemetry.update();
-
-
-
-        robot.rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //sleep(1000);
-        robot.rightFront.setPower(speed);
-        robot.rightBack.setPower(speed);
-        robot.leftFront.setPower(speed);
-        robot.leftBack.setPower(speed);
-        //sleep(100);
-
-        while (opModeIsActive() && (robot.rightFront.isBusy() && robot.leftFront.isBusy())
-                && (robot.rightBack.isBusy() && robot.leftBack.isBusy()))
-        {
-            robot.Lift.setPower(-0.8);
-            sleep(500);
-            robot.Lift.setPower(0);
-            sleep(100);
-
-        }
-
-        waitOneFullHardwareCycle();
-
 
         // Stop all motion;
         robot.rightFront.setPower(0);
-        robot.rightBack.setPower(0);
         robot.leftFront.setPower(0);
-        robot.leftBack.setPower(0);
-        robot.Lift.setPower(0);
-
-
-        // Turn off RUN_TO_POSITION
-        robot.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
     }
-    public void EncodedStraightDriveFoundation2(double inches, double speed) throws InterruptedException //Make negative distance if want to forward or backward depending on motors
-    {
-        int RotationsNeeded= (int)(inches*(COUNTS_PER_INCH));
 
-        robot.rightFront.setTargetPosition((-RotationsNeeded)+(robot.rightFront.getCurrentPosition()));
-        robot.rightBack.setTargetPosition((-RotationsNeeded)+(robot.rightBack.getCurrentPosition()));
-        robot.leftFront.setTargetPosition((RotationsNeeded)+(robot.leftFront.getCurrentPosition()));
-        robot.leftBack.setTargetPosition((RotationsNeeded)+(robot.leftBack.getCurrentPosition()));
+    boolean onHeading(double speed, double angle, double PCoeff) {
+        double   error ;
+        double   steer ;
+        boolean  onTarget = false ;
+        double leftSpeed;
+        double rightSpeed;
 
-        telemetry.addData("RightFront:", RotationsNeeded);
-        telemetry.addData("RightBack:", RotationsNeeded);
-        telemetry.addData("LeftFront:", RotationsNeeded);
-        telemetry.addData("LeftBack:", RotationsNeeded);
+        // determine turn power based on +/- error
+        error = getError(angle);
 
-        telemetry.update();
+        if (Math.abs(error) <= HEADING_THRESHOLD) {
+            steer = 0.0;
+            leftSpeed  = 0.0;
+            rightSpeed = 0.0;
+            onTarget = true;
+        }
+        else {
+            steer = getSteer(error, PCoeff);
 
 
+            rightSpeed  = speed * steer;
+            leftSpeed   = rightSpeed;
 
-        robot.rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //sleep(1000);
-        robot.rightFront.setPower(speed);
-        robot.rightBack.setPower(speed);
-        robot.leftFront.setPower(speed);
-        robot.leftBack.setPower(speed);
-        //sleep(100);
-
-        while (opModeIsActive() && (robot.rightFront.isBusy() && robot.leftFront.isBusy())
-                && (robot.rightBack.isBusy() && robot.leftBack.isBusy()))
-        {
-
-            robot.GrabMove.setPosition(1.0);
         }
 
-        waitOneFullHardwareCycle();
+        // Send desired speeds to motors.
+        robot.leftFront.setPower(leftSpeed);
+        robot.rightFront.setPower(rightSpeed);
+        robot.leftBack.setPower(leftSpeed);
+        robot.rightBack.setPower(rightSpeed);
 
+        // Display it for the driver.
+        telemetry.addData("Target", "%5.2f", angle);
+        telemetry.addData("Err/St", "%5.2f/%5.2f", error, steer);
+        telemetry.addData("Speed.", "%5.2f:%5.2f", leftSpeed, rightSpeed);
 
-        // Stop all motion;
-        robot.rightFront.setPower(0);
-        robot.rightBack.setPower(0);
-        robot.leftFront.setPower(0);
-        robot.leftBack.setPower(0);
-        robot.Lift.setPower(0);
-        robot.Grabber.setPosition(0.5);
-        sleep(200);
-
-
-        // Turn off RUN_TO_POSITION
-        robot.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+        return onTarget;
     }
 
-    //Foundation
+    public double getError(double targetAngle) {
 
-    public void Foundation() throws InterruptedException
-    {
-        robot.GrabFoundationRight.setPosition(0.5);
-        robot.GrabFoundationLeft.setPosition(1.0);
-        sleep(100);
+        double robotError;
 
-        EncodedStraightDriveFoundation(30,0.4);//Brings Lift Up as well
-        sleep(100);
-        EncodedStrafe(-18,0.3);
-
-        robot.GrabFoundationRight.setPosition(0.5);
-        robot.GrabFoundationLeft.setPosition(1.0);
-        sleep(10);
-
-        TurnAbsolutePositive(270,0.3,2);
-
-        robot.GrabFoundationRight.setPosition(0.25);
-        robot.GrabFoundationLeft.setPosition(0.5);
-        sleep(1000);
-
-        EncodedStraightDriveFoundation2(-15,0.5);//Brings block out and throws
-
-        robot.GrabMove.setPosition(0);
-        sleep(600);
-
-        LiftDown(7,1.0);
-
+        // calculate error in -179 to +180 range  (
+        robotError = targetAngle - robot.gyro.getIntegratedZValue();
+        while (robotError > 180)  robotError -= 360;
+        while (robotError <= -180) robotError += 360;
+        return robotError;
     }
 
-
-
+    public double getSteer(double error, double PCoeff) {
+        return Range.clip(error * PCoeff, -1, 1);
+    }
 }
